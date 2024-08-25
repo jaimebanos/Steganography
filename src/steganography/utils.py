@@ -1,6 +1,9 @@
 from os import write
 from PIL import Image
 import numpy as np
+import os
+
+MARK = "11110000111100001111000011110000"
 
 
 def resize_image(image_path: str, output_path: str, new_size: tuple):
@@ -14,14 +17,22 @@ def encode_message(image_path: str, file_path: str, output_image_path: str):
     with open(file_path, "rb") as file:
         file_data = file.read()
 
-    file_bits = "".join(format(byte, "08b") for byte in file_data)
+    file_name, file_extension = os.path.splitext(file_path)
+    file_type = file_extension[1:]  # Quitar el punto del inicio
+
+    file_type_bits = "".join(format(ord(c), "08b") for c in file_type) + MARK
+    file_name_bits = "".join(format(ord(c), "08b") for c in file_name) + MARK
+    file_bits = "".join(format(byte, "08b") for byte in file_data) + MARK
+
+    bits_to_encode = file_type_bits + file_name_bits + file_bits
 
     img_data = np.array(img)
     flat_img_data = img_data.flatten()
 
-    file_bits += "00000000"
+    if len(bits_to_encode) > len(flat_img_data):
+        raise ValueError("Message is too long to encode in the image.")
 
-    for i, bit in enumerate(file_bits):
+    for i, bit in enumerate(bits_to_encode):
         flat_img_data[i] = (flat_img_data[i] & 0xFE) | int(bit)
 
     img_data = flat_img_data.reshape(img_data.shape)
@@ -31,23 +42,36 @@ def encode_message(image_path: str, file_path: str, output_image_path: str):
     print(f"Imagen con archivo oculto guardada en {output_image_path}")
 
 
-def decode_message(image_path: str, output_path: str):
+def decode_message(image_path: str):
     img = Image.open(image_path)
     img_data = np.array(img)
     flat_img_data = img_data.flatten()
 
-    file_bits = ""
-    for i in range(len(flat_img_data)):
-        file_bits += str(flat_img_data[i] & 1)
+    bits = "".join(str(pixel & 1) for pixel in flat_img_data)
 
-    end_marker = "00000000"
-    end_index = file_bits.find(end_marker)
+    parts = bits.split(MARK)
 
-    if end_index != -1:
-        file_bits = file_bits[: end_index + 1]
+    if len(parts) < 3:
+        raise ValueError("Not have any message")
 
-    file_bytes = [int(file_bits[i : i + 8], 2) for i in range(0, len(file_bits), 8)]
-    file_data = bytes(file_bytes)
+    file_type_bits = parts[0]
+    file_name_bits = parts[1]
+    file_bits = parts[2]
+    print(len(parts))
 
-    with open(output_path, "wb") as f:
-        f.write(file_data)
+    def bits_to_string(bits):
+        return "".join(chr(int(bits[i : i + 8], 2)) for i in range(0, len(bits), 8))
+
+    file_type = bits_to_string(file_type_bits)
+    file_name = bits_to_string(file_name_bits)
+    file_data_bits = file_bits
+
+    file_data = bytearray()
+    for i in range(0, len(file_data_bits), 8):
+        byte = file_data_bits[i : i + 8]
+        if len(byte) < 8:
+            break
+        file_data.append(int(byte, 2))
+
+    with open(f"decoders/extracted_{file_name}.{file_type}", "wb") as file:
+        file.write(file_data)

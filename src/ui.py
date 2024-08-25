@@ -2,7 +2,7 @@ from re import I
 from .steganography.utils import *
 import tkinter
 from tkinter import filedialog
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import os
 
 
@@ -35,6 +35,16 @@ class myTk(tkinter.Tk):
             foreground="white",
             width=15,
             command=self.encode,
+        )
+
+        button_decode = tkinter.Button(
+            center_frame,
+            text="Decode",
+            font=("Helvetica", 10),
+            background="grey",
+            foreground="white",
+            width=15,
+            command=self.decode,
         )
 
         ### Left frame
@@ -81,7 +91,8 @@ class myTk(tkinter.Tk):
         button_choose_file.pack(pady=10)
         self.file_selected_label.pack(pady=10)
 
-        button_encode.pack(pady=10, side="bottom")
+        button_encode.pack(pady=10, padx=10, side="bottom")
+        button_decode.pack(pady=10, padx=10, side="bottom")
         self.mainloop()
 
     def load_image(self):
@@ -93,7 +104,7 @@ class myTk(tkinter.Tk):
         image_var = tkinter.PhotoImage(file=self.tempRoot, width=200, height=200)
 
         self.image_label.config(image=image_var)
-        self.image_label.image = image_var
+        self.image_label.image = image_var  # type: ignore
 
     def load_file(self):
         file_name = filedialog.askopenfilename()
@@ -109,7 +120,6 @@ class myTk(tkinter.Tk):
         img = img.resize((base_width, hsize), Image.Resampling.LANCZOS)
         img.save(self.tempRoot)
 
-    # TODO realizar el docode
     def encode(self):
 
         if (
@@ -119,17 +129,34 @@ class myTk(tkinter.Tk):
         ):
 
             file_path = self.file_selected_label.cget("text").split(": ")[1]
-            output_image_path = "outputs/output.png"
-            encode_message(self.original_image, file_path, output_image_path)
+            output_path = self.outputRoot + "output.png"
+
+            encode_message(self.original_image, file_path, output_path)
             # decode_message(output_image_path, "test.py")
-            tkinter.messagebox.showinfo("Steganography", "File encoded successfully!")
+            tkinter.messagebox.showinfo("Steganography", "File encoded successfully!")  # type: ignore
 
             # Reset values and delete temporatly image
             self.image_label.config(image="")
-            self.image_label.image = None
+            self.image_label.image = None  # type: ignore
             self.file_selected_label.config(text="")
-            self.image_label.text = None
+            self.image_label.text = None  # type: ignore
             os.remove(self.tempRoot)
 
         else:
-            tkinter.messagebox.showinfo("No image or file selected")
+            tkinter.messagebox.showinfo("No image or file selected")  # type: ignore
+
+    def decode(self):
+        file_name = filedialog.askopenfilename(
+            filetypes=(("PNG files", "*.png"), ("All files", "*.*"))
+        )
+        try:
+            decode_message(file_name)
+            tkinter.messagebox.showinfo("Steganography", "File decoded successfully!")  # type: ignore
+
+        except ValueError:
+            tkinter.messagebox.showinfo("Steganography", "No message found in the image")  # type: ignore
+        except UnidentifiedImageError:
+            tkinter.messagebox.showinfo("Steganography", "Debe ser de tipo imagen")  # type: ignore
+        except Exception as e:
+            print(type(e))
+            tkinter.messagebox.showinfo("Steganography", "Error en el decoder")  # type: ignore

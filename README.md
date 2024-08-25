@@ -36,7 +36,8 @@ la carpeta decoders si ha ido todo bien tendrás tu archivo decodificado
 ## Tareas
 
 - [X] Implementar la función `decode`.
+- [X] Guardar información sobre el tipo de archivo oculto para poder reconstruirlo correctamente al decodificar.
 - [ ] Añadir una notificación de "Cargando".
 - [ ] Gestionar errores cuando la imagen es demasiado pequeña.
-- [ ] Guardar información sobre el tipo de archivo oculto para poder reconstruirlo correctamente al decodificar.
+
 

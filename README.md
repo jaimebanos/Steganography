@@ -31,7 +31,7 @@ Al finalizar, encontrarás la imagen resultante con el mensaje oculto en la carp
 
 ## Decode function
 Seleccionando un archivo de tus outputs, o archivos que contengan un contenido oculto, al seleccionarlo este te devolverá un mensaje y en 
-la carpeta decoders si ha ido tood bien tendrás tu archivo decodificado
+la carpeta decoders si ha ido todo bien tendrás tu archivo decodificado
 
 ## Tareas
 

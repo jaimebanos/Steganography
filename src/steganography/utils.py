@@ -75,3 +75,12 @@ def decode_message(image_path: str):
 
     with open(f"decoders/extracted_{file_name}.{file_type}", "wb") as file:
         file.write(file_data)
+
+
+def resize_image(path: str, output_path: str):
+    base_width = 300
+    img = Image.open(path)
+    wpercent = base_width / float(img.size[0])
+    hsize = int((float(img.size[1]) * float(wpercent)))
+    img = img.resize((base_width, hsize), Image.Resampling.LANCZOS)
+    img.save(output_path)

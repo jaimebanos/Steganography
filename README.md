@@ -28,9 +28,14 @@ Si todo ha ido correctamente, verás una interfaz similar a la siguiente:
 
 Al finalizar, encontrarás la imagen resultante con el mensaje oculto en la carpeta llamada `outputs`.
 
+
+## Decode function
+Seleccionando un archivo de tus outputs, o archivos que contengan un contenido oculto, al seleccionarlo este te devolverá un mensaje y en 
+la carpeta decoders si ha ido tood bien tendrás tu archivo decodificado
+
 ## Tareas
 
-- [ ] Implementar la función `decode`.
+- [X] Implementar la función `decode`.
 - [ ] Añadir una notificación de "Cargando".
 - [ ] Gestionar errores cuando la imagen es demasiado pequeña.
 - [ ] Guardar información sobre el tipo de archivo oculto para poder reconstruirlo correctamente al decodificar.

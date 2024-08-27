@@ -69,7 +69,7 @@ class MyTk(tk.Tk):
             background="grey",
             foreground="white",
             width=15,
-            command=self.controler._load_file,
+            command=self.controler.load_file,
         )
         self.file_selected_label = tk.Label(right_frame, background="white")
 

@@ -6,7 +6,7 @@ from PIL import UnidentifiedImageError
 
 
 class TkinterControler:
-    def __init__(self, tk_ui: "MyTk") -> None:
+    def __init__(self, tk_ui: "MyTk") -> None:  # type: ignore
         self.tk_ui = tk_ui
 
     def encode(self):
@@ -58,7 +58,7 @@ class TkinterControler:
         self.tk_ui.image_label.config(image=image_var)
         self.tk_ui.image_label.image = image_var  # type: ignore
 
-    def _load_file(self):
+    def load_file(self):
         file_name = filedialog.askopenfilename()
-        file_name_format = file_name.split("/")[-1]
-        self.tk_ui.file_selected_label.config(text=f"Archivo: {file_name_format}")
+
+        self.tk_ui.file_selected_label.config(text=f"Archivo: {file_name}")
